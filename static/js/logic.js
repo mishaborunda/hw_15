@@ -1,14 +1,16 @@
 // grab the data
 let url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson`;
+let url2 = "https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json"
 
  // make request
  d3.json(url).then(function (data) {
     console.log(data);
-
-    makeMap(data);
+    d3.json(url2).then(function(data2){
+      makeMap(data, data2);
+    })
   });
 
-  function makeMap(data) {
+  function makeMap(data, data2) {
   
     // Step 1: Define your BASE Layers
     // Define variables for our tile layers.
@@ -78,6 +80,7 @@ let url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.ge
   
     let markerLayer = L.layerGroup(markers);
     let circleLayer = L.layerGroup(circles);
+    let tectonicLayer = L.geoJSON(data2);
   
     // Step 3: Create the MAP object
   
@@ -85,7 +88,7 @@ let url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.ge
     let myMap = L.map("map", {
       center: [32.7767, -96.7970],
       zoom: 4,
-      layers: [street, circleLayer]
+      layers: [street, circleLayer, tectonicLayer]
     });
   
     // Step 4: Add the Layer Controls (Legend goes here too)
@@ -99,7 +102,8 @@ let url = `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.ge
     // Overlays that can be toggled on or off
     let overlayMaps = {
       Markers: markerLayer,
-      Circles: circleLayer
+      Circles: circleLayer,
+      Tectonic :tectonicLayer
     };
   
     // Pass our map layers into our layer control.
